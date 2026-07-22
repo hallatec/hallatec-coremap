@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<!--
+  SPDX-License-Identifier: AGPL-3.0-or-later
+  SPDX-FileCopyrightText: 2026 Hallatec Technology Solutions LLC
+
+  CoreMap - part of Hallatec Forge.
+  Canonical: https://coremap.hallatec.com/
+  Source:    https://github.com/hallatec/hallatec-coremap
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CoreMap - Network Segmentation Designer · Hallatec Forge</title>
+<meta name="description" content="Turns a list of what's on your network into a proposed VLAN/security-zone map and a baseline firewall-rule matrix - why CCTV, guest Wi-Fi, finance and servers shouldn't share one flat network." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/hallatec.css?v=3" />
+<link rel="canonical" href="https://coremap.hallatec.com/" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "CoreMap - Network Segmentation Designer",
+  "url": "https://coremap.hallatec.com/",
+  "applicationCategory": "SecurityApplication",
+  "operatingSystem": "Web browser",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "AED" },
+  "description": "Turns a network inventory into a proposed VLAN/zone map and firewall matrix, showing why CCTV, guest Wi-Fi and finance shouldn't share a flat network.",
+  "isAccessibleForFree": true,
+  "publisher": { "@type": "Organization", "name": "Hallatec Technology Solutions LLC", "url": "https://hallatec.com/" }
+}
+</script>
+<meta name="author" content="Hallatec Technology Solutions LLC" />
+<meta name="copyright" content="Copyright (C) 2026 Hallatec Technology Solutions LLC" />
+<link rel="license" href="https://www.gnu.org/licenses/agpl-3.0.html" />
+<link rel="code-repository" href="https://github.com/hallatec/hallatec-coremap" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "name": "CoreMap",
+  "codeRepository": "https://github.com/hallatec/hallatec-coremap",
+  "programmingLanguage": ["HTML", "CSS", "JavaScript"],
+  "runtimePlatform": "Web browser",
+  "license": "https://www.gnu.org/licenses/agpl-3.0.html",
+  "copyrightYear": "2026",
+  "copyrightHolder": { "@type": "Organization", "name": "Hallatec Technology Solutions LLC", "url": "https://hallatec.com/" },
+  "author": { "@type": "Organization", "name": "Hallatec Technology Solutions LLC", "url": "https://hallatec.com/" },
+  "targetProduct": {
+    "@type": "SoftwareApplication",
+    "name": "CoreMap",
+    "url": "https://coremap.hallatec.com/",
+    "applicationCategory": "SecurityApplication"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Hallatec Forge",
+    "url": "https://forge.hallatec.com/"
+  }
+}
+</script>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="../../index.html" aria-label="Hallatec Forge home"><span class="brand-logo" role="img" aria-label="Hallatec"></span><span class="brand-sub">Forge</span></a>
+    <span class="nav-spring"></span>
+    <a class="back-link" href="../../index.html">← All tools</a>
+  </div>
+</header>
+
+<section class="tool-hero">
+  <div class="wrap">
+    <div class="kbadge"><span class="pill"><span class="tag">Phase 3</span> · Class A · Static</span> <span class="chip sev-info">NIST · Protect</span></div>
+    <h1>Is your network segmented, <span class="grad-text">or dangerously flat?</span></h1>
+    <p class="lead">Tell CoreMap what's on your network and it proposes a VLAN / security-zone map, a baseline firewall-rule matrix, and a deployment plan - showing why CCTV, guest Wi-Fi, finance and servers should never share one flat network.</p>
+    <p class="muted" style="margin-top:10px">A vendor-neutral starter design, not a production configuration.</p>
+  </div>
+</section>
+
+<main class="wrap">
+  <section class="card">
+    <h3 style="font-size:17px">What's on your network?</h3>
+    <p class="muted" style="margin-bottom:10px">Toggle everything that applies.</p>
+    <div class="chips" id="inventory"></div>
+    <button class="btn btn-primary" id="designBtn" style="margin-top:18px">Design my network</button>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results" class="hidden" style="margin-top:22px">
+    <div class="card card-glow" style="display:flex;gap:24px;align-items:center;flex-wrap:wrap">
+      <div class="gauge sm" id="cmGauge" data-value="0"></div>
+      <div style="flex:1;min-width:260px">
+        <p class="eyebrow">Isolation priority</p>
+        <h2 id="isoHead" style="margin:6px 0">-</h2>
+        <div id="flatWarn"></div>
+      </div>
+    </div>
+
+    <section class="card" style="margin-top:20px">
+      <h3 style="font-size:17px">Segmentation coverage</h3>
+      <p class="muted" style="margin-bottom:14px">Share of your assets pulled off a flat LAN into their own isolated VLAN / security zone. Higher is safer - the target is full separation.</p>
+      <div class="meter-grid two" id="covMeter"></div>
+    </section>
+
+    <section class="card" style="margin-top:20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <h3 style="font-size:17px">Proposed zone map</h3>
+        <button class="btn btn-ghost btn-sm" id="dlSvg">⇩ Download diagram (SVG)</button>
+      </div>
+      <div id="diagram" style="margin-top:14px;overflow-x:auto"></div>
+    </section>
+
+    <section class="card" style="margin-top:20px">
+      <h3 style="font-size:17px">Zones &amp; addressing</h3>
+      <div class="table-wrap" style="margin-top:12px">
+        <table class="matrix"><thead><tr><th>Zone (VLAN)</th><th>Trust</th><th>What lives here</th><th>Subnet</th></tr></thead><tbody id="zoneRows"></tbody></table>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:20px">
+      <h3 style="font-size:17px">Baseline firewall-rule matrix</h3>
+      <p class="muted" style="margin-bottom:10px">Default-deny between zones; only the flows below are allowed. Hover a cell for the rationale.</p>
+      <div class="table-wrap"><table class="matrix" id="fwMatrix"></table></div>
+      <div class="matrix-legend"><span><b class="cell-allow">A</b> Allow</span><span><b class="cell-limit">L</b> Limited (specific ports/hosts)</span><span><b class="cell-deny">✕</b> Deny</span></div>
+    </section>
+
+    <section style="margin-top:20px">
+      <h3>Deployment plan</h3>
+      <div id="plan" style="margin-top:12px"></div>
+    </section>
+
+    <div class="cta" style="margin-top:22px">
+      <p class="eyebrow">Next step</p>
+      <h3>Make the design real.</h3>
+      <p>CoreMap gives you the blueprint. Hallatec implements it - controller-managed VLANs, firewall policy, and documented handover with backup exports, without downtime.</p>
+      <div class="btn-row"><button class="btn btn-primary" onclick="HTC.print()">⇩ Export design</button><a class="btn btn-ghost" href="mailto:hello@hallatec.com?subject=CoreMap%20-%20segmentation%20%26%20firewall">Book segmentation design</a></div>
+      <div class="crosslinks"><a href="../attackrank/">Prioritise vulnerabilities →</a><a href="../hscore/">Full posture (H-Score) →</a></div>
+    </div>
+    <p class="disclaimer" style="margin-top:16px">Starter segmentation design based on your inputs; validate addressing, VLAN IDs and rules against your environment before deployment. Not a production firewall configuration.</p>
+  </section>
+</main>
+
+<footer class="foot"><div class="wrap"><span class="brand-logo foot-logo" role="img" aria-label="Hallatec"></span><span>© 2026 Hallatec Technology Solutions LLC</span><span class="disclaimer">CoreMap · Network Segmentation Design</span></div></footer>
+
+<script src="assets/hallatec.js?v=3"></script>
+<script>
+const $=HTC.$, $$=HTC.$$;
+/* asset -> zone taxonomy */
+const ASSETS = [
+  ["users","Users / workstations","corp"],["servers","Servers","servers"],["guest","Guest Wi-Fi","guest"],
+  ["cctv","CCTV / NVR","cctv"],["voip","VoIP phones","voip"],["pos","POS / payments","pay"],
+  ["printers","Printers","print"],["iot","IoT / smart devices","iot"],["vendor","Vendor access","vendor"],
+  ["remote","Remote access","vendor"],["s2s","Site-to-site VPN","s2s"],["finance","Finance / HR staff","fin"]
+];
+const ZONES = {
+  mgmt:{name:"Management",vlan:10,trust:"Trusted",sub:"10.10.10.0/24",lives:"Switch/AP/firewall admin",risk:8},
+  servers:{name:"Servers / Core",vlan:20,trust:"Trusted",sub:"10.10.20.0/24",lives:"App, file, domain servers",risk:12},
+  corp:{name:"Corp Users",vlan:30,trust:"Semi-trusted",sub:"10.10.30.0/24",lives:"Staff workstations",risk:5},
+  fin:{name:"Finance / HR",vlan:40,trust:"Restricted",sub:"10.10.40.0/24",lives:"Finance &amp; HR endpoints",risk:16},
+  pay:{name:"Payments (PCI)",vlan:45,trust:"Restricted",sub:"10.10.45.0/24",lives:"POS terminals",risk:18},
+  voip:{name:"Voice",vlan:50,trust:"Semi-trusted",sub:"10.10.50.0/24",lives:"IP phones, SIP",risk:6},
+  cctv:{name:"CCTV / Physical",vlan:60,trust:"Isolated",sub:"10.10.60.0/24",lives:"Cameras, NVR",risk:18},
+  print:{name:"Printers",vlan:70,trust:"Isolated",sub:"10.10.70.0/24",lives:"Printers, MFPs",risk:6},
+  iot:{name:"IoT",vlan:80,trust:"Isolated",sub:"10.10.80.0/24",lives:"Smart / building devices",risk:15},
+  guest:{name:"Guest",vlan:90,trust:"Untrusted",sub:"10.10.90.0/24",lives:"Visitor Wi-Fi (internet-only)",risk:15},
+  vendor:{name:"Vendor / Remote",vlan:100,trust:"Untrusted",sub:"10.10.100.0/24",lives:"Contractors, remote access",risk:14},
+  s2s:{name:"Site-to-site",vlan:0,trust:"Routed",sub:"per-tunnel",lives:"Branch tunnels",risk:6}
+};
+const TRUST_ORDER = ["Trusted","Restricted","Semi-trusted","Isolated","Untrusted","Routed"];
+const TRUST_COLOR = { "Trusted":"#43b581","Restricted":"#e0a13c","Semi-trusted":"#7c86f2","Isolated":"#a3a8b4","Untrusted":"#e5555b","Routed":"#6d7280" };
+
+$("#inventory").innerHTML = ASSETS.map((a,i)=>'<button class="chip-toggle" data-z="'+a[2]+'"'+(["users","servers","guest","cctv","finance"].includes(a[0])?' aria-pressed="true"':'')+'><span class="dot"></span>'+a[1]+'</button>').join("");
+$$(".chip-toggle").forEach(c=> c.addEventListener("click", ()=> c.setAttribute("aria-pressed", c.getAttribute("aria-pressed")==="true"?"false":"true")));
+
+function presentZones(){
+  const set=new Set();
+  $$('.chip-toggle[aria-pressed="true"]').forEach(c=> set.add(c.dataset.z));
+  set.add("mgmt"); // always recommend a management zone
+  return TRUST_ORDER.flatMap(t=> Object.keys(ZONES).filter(k=>set.has(k)&&ZONES[k].trust===t));
+}
+/* firewall rule engine */
+function rule(from,to){
+  if(from===to) return ["A","Intra-zone traffic (host isolation optional)"];
+  if(to==="internet"){
+    return ({guest:["A","Internet only"],corp:["A","General browsing"],fin:["L","Business apps only"],pay:["L","Acquirer endpoints only"],
+      servers:["L","Updates &amp; licensing"],voip:["L","SIP trunk / provider"],vendor:["L","Scoped destinations"],mgmt:["L","Vendor mgmt/updates"],
+      cctv:["✕","No internet - cameras don't need it"],iot:["L","Vendor cloud only, filtered"],print:["✕","No internet"],s2s:["A","Tunnel"]}[from]||["✕","Default deny"]);
+  }
+  if(from==="mgmt") return ["L","Admin to device mgmt planes only"];
+  if(to==="mgmt") return ["✕","No user access to management"];
+  if(from==="corp"&&to==="servers") return ["L","App ports only (e.g. 443/445/1433)"];
+  if(from==="fin"&&to==="servers") return ["L","Finance apps only"];
+  if(from==="pay"&&to==="servers") return ["L","Payment gateway host only"];
+  if(from==="corp"&&to==="print") return ["A","Printing"];
+  if(from==="fin"&&to==="print") return ["A","Printing"];
+  if(from==="cctv"&&to==="servers") return ["L","NVR host only"];
+  if(from==="iot"&&to==="servers") return ["L","Controller host only"];
+  if(from==="vendor"&&to==="servers") return ["L","Just-in-time, single host"];
+  if(from==="guest") return ["✕","Guests never reach internal zones"];
+  if(from==="iot"&&to!=="iot") return ["✕","IoT stays isolated"];
+  if(from==="cctv"&&to!=="servers") return ["✕","Cameras stay isolated"];
+  return ["✕","Default deny"];
+}
+
+function design(){
+  const zones = presentZones();
+  const active = zones.filter(z=>z!=="mgmt");
+  // isolation priority
+  const totalRisk = active.reduce((s,z)=> s+ZONES[z].risk, 0);
+  const hasSensitive = active.some(z=>["fin","pay","servers"].includes(z));
+  const hasUntrusted = active.some(z=>["guest","cctv","iot","vendor"].includes(z));
+  let score = Math.min(100, Math.round(totalRisk*1.25 + (hasSensitive&&hasUntrusted?18:0)));
+  // segmentation coverage: share of active asset-zones moved off the flat LAN into a dedicated zone.
+  // Corp Users (corp) is the flat baseline tier; every other active zone is its own segment.
+  const segmented = active.filter(z=> z!=="corp").length;
+  const coverage = active.length? Math.round(segmented/active.length*100) : 0;
+  return {zones,active,score,hasSensitive,hasUntrusted,segmented,coverage};
+}
+
+function svgDiagram(zones){
+  const tiers={}; zones.forEach(z=>{ const t=ZONES[z].trust; (tiers[t]=tiers[t]||[]).push(z); });
+  const order=TRUST_ORDER.filter(t=>tiers[t]);
+  const W=760, colW=150, gap=16, padX=20, boxH=58; let rows=[];
+  order.forEach((t,ti)=> tiers[t].forEach((z,zi)=> rows.push({t,ti,z,zi,count:tiers[t].length})));
+  const tierY = {}; order.forEach((t,i)=> tierY[t]=70+i*82);
+  const H = 70 + order.length*82 + 20;
+  let s='<svg id="cmSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" font-family="Poppins,Arial,sans-serif" role="img">';
+  s+='<title>Proposed network segmentation zone map</title><desc>Security zones grouped by trust tier with VLAN IDs and subnets.</desc>';
+  s+='<rect width="'+W+'" height="'+H+'" fill="#0e0f13" rx="14"/>';
+  s+='<text x="20" y="34" fill="#f5f6f8" font-size="15" font-weight="600">Hallatec CoreMap - proposed zones</text>';
+  s+='<text x="'+(W-20)+'" y="34" fill="#6d7280" font-size="11" text-anchor="end">Internet ▲ edge firewall</text>';
+  order.forEach((t)=>{
+    const y=tierY[t]; const col=TRUST_COLOR[t];
+    s+='<text x="20" y="'+(y-8)+'" fill="'+col+'" font-size="10" font-weight="700" letter-spacing="1">'+t.toUpperCase()+'</text>';
+    tiers[t].forEach((z,zi)=>{
+      const Z=ZONES[z]; const x=padX + zi*(colW+gap);
+      s+='<g><rect x="'+x+'" y="'+y+'" width="'+colW+'" height="'+boxH+'" rx="10" fill="#16181f" stroke="'+col+'" stroke-opacity=".6"/>';
+      s+='<rect x="'+x+'" y="'+y+'" width="4" height="'+boxH+'" rx="2" fill="'+col+'"/>';
+      s+='<text x="'+(x+14)+'" y="'+(y+23)+'" fill="#f5f6f8" font-size="12.5" font-weight="600">'+Z.name+'</text>';
+      s+='<text x="'+(x+14)+'" y="'+(y+40)+'" fill="#a3a8b4" font-size="10.5">VLAN '+(Z.vlan||'-')+' · '+Z.sub+'</text></g>';
+    });
+  });
+  s+='</svg>';
+  return s;
+}
+
+function render(){
+  const d=design();
+  $("#results").classList.remove("hidden");
+  const g=$("#cmGauge"); g.dataset.value=d.score;
+  HTC.gauge(g, d.score, { band: d.score>=70?"High":d.score>=45?"Medium":"Low", label:"Isolation priority" });
+  $("#isoHead").textContent = (d.score>=70?"High":d.score>=45?"Medium":"Low")+" priority · "+d.score+"/100";
+  // segmentation coverage track-meter, derived from the asset inputs
+  const cm=$("#covMeter"); cm.innerHTML='<div class="track-meter" id="covTrack"></div>';
+  HTC.trackMeter($("#covTrack"), d.coverage, { label: d.segmented+" of "+d.active.length+" asset groups isolated", max:100, unit:"%", display:d.coverage+"%", target:100 });
+  const risky = d.active.filter(z=>["cctv","guest","iot","pay","fin","vendor"].includes(z)).map(z=>ZONES[z].name);
+  $("#flatWarn").innerHTML = (d.hasSensitive&&d.hasUntrusted)
+    ? '<div class="alert warn"><span class="ic">▲</span><span>You have '+risky.slice(0,3).join(", ")+' implied on one network. On a flat LAN, a compromised camera or guest device can reach finance and servers directly. <b>Segment these first.</b></span></div>'
+    : '<div class="alert"><span class="ic">✓</span><span>Your asset mix is lower-risk, but zoning still limits lateral movement and simplifies compliance.</span></div>';
+  // zone table
+  $("#zoneRows").innerHTML = d.zones.map(z=>{ const Z=ZONES[z]; return '<tr><td class="rolecell">'+Z.name+' <span class="muted">VLAN '+(Z.vlan||'-')+'</span></td><td><span class="chip" style="color:'+TRUST_COLOR[Z.trust]+';border-color:'+TRUST_COLOR[Z.trust]+'55;background:'+TRUST_COLOR[Z.trust]+'1a">'+Z.trust+'</span></td><td>'+Z.lives+'</td><td style="font-family:monospace">'+Z.sub+'</td></tr>'; }).join("");
+  // diagram
+  $("#diagram").innerHTML = svgDiagram(d.zones);
+  // firewall matrix
+  const cols = d.zones.concat(["internet"]);
+  const label = z=> z==="internet"?"Internet":ZONES[z].name;
+  let m='<thead><tr><th>From ↓ / To →</th>'+cols.map(c=>'<th>'+label(c)+'</th>').join("")+'</tr></thead><tbody>';
+  d.zones.forEach(fr=>{
+    m+='<tr><td class="rolecell">'+label(fr)+'</td>'+cols.map(to=>{
+      const [v,why]=rule(fr,to); const cls=v==="A"?"cell-allow":v==="L"?"cell-limit":"cell-deny";
+      return '<td class="'+cls+'" title="'+why.replace(/<[^>]+>/g,'')+'" style="text-align:center;cursor:help">'+v+'</td>';
+    }).join("")+'</tr>';
+  });
+  m+='</tbody>'; $("#fwMatrix").innerHTML=m;
+  // plan
+  const steps=[
+    ["Baseline &amp; document","Map current devices, IPs and cabling before touching anything. Back up switch/firewall configs."],
+    ["Create the zones","Provision the VLANs and subnets above on a controller-managed switch stack; keep Management (VLAN 10) admin-only."],
+    ["Isolate the untrusted first","Move Guest, CCTV and IoT off the flat LAN - internet-only or controller-only. Biggest immediate risk reduction."],
+    ["Apply default-deny policy","Enforce the firewall matrix: deny inter-zone by default, allow only the listed flows."],
+    ["Protect the crown jewels","Restrict Finance/HR, Payments and Servers to named app ports and hosts; log inter-zone traffic."],
+    ["Test &amp; hand over","Validate every allowed flow, confirm nothing crosses that shouldn't, and document the design + config backups."]
+  ];
+  $("#plan").innerHTML = steps.map((s,i)=>'<div class="rec"><span class="rank">'+(i+1)+'</span><div class="rbody"><h4>'+s[0]+'</h4><p>'+s[1]+'</p></div></div>').join("");
+  HTC.reveal($("#results"));
+}
+$("#designBtn").addEventListener("click", render);
+$("#dlSvg").addEventListener("click", ()=>{
+  const svg=$("#cmSvg"); if(!svg){ return; }
+  const blob=new Blob([svg.outerHTML],{type:"image/svg+xml"}); const url=URL.createObjectURL(blob);
+  const a=document.createElement("a"); a.href=url; a.download="hallatec-coremap-zones.svg"; a.click(); URL.revokeObjectURL(url);
+  HTC.toast("Diagram downloaded");
+});
+</script>
+</body>
+</html>
