@@ -62,9 +62,11 @@ verify a deployment is genuine.
 | [Lifeline](https://github.com/hallatec/hallatec-lifeline) | `lifeline.hallatec.com` | Backup and recovery readiness - RTO and RPO modelling |
 | [Lockfall](https://github.com/hallatec/hallatec-lockfall) | `lockfall.hallatec.com` | Ransomware downtime and cost-exposure estimator |
 
-The `assets/` design system is shared across all nine repositories as
-identical copies, so each tool stays standalone and buildless. Component
-changes should be propagated to the siblings above.
+### Shared Design Core: One Rule
+
+The files under `assets/` (`hallatec.css` and `hallatec.js`) are generated and distributed from the canonical core repository: [**`hallatec/hallatec-forge-core`**](https://github.com/hallatec/hallatec-forge-core).
+
+**Do not edit `assets/hallatec.{css,js}` directly in this repository.** Any changes to design tokens, styles, or shared components must be made in `hallatec-forge-core`, which automatically validates, updates per-repo attribution headers and provenance blocks, and submits Pull Requests across all nine tools.
 
 ## Licence
 
